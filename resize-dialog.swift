@@ -10,7 +10,7 @@ class ResizeDialogController: NSObject, NSWindowDelegate {
 
     func run(filename: String, origWidth: Int, origHeight: Int) -> Bool {
         let dialogWidth: CGFloat = 300
-        let dialogHeight: CGFloat = 180
+        let dialogHeight: CGFloat = 195
 
         window = NSWindow(
             contentRect: NSRect(x: 0, y: 0, width: dialogWidth, height: dialogHeight),
@@ -24,36 +24,44 @@ class ResizeDialogController: NSObject, NSWindowDelegate {
 
         let contentView = NSView(frame: NSRect(x: 0, y: 0, width: dialogWidth, height: dialogHeight))
 
-        // File info label
-        let infoLabel = NSTextField(labelWithString: "\(filename)  (\(origWidth)×\(origHeight))")
-        infoLabel.font = NSFont.systemFont(ofSize: 12)
-        infoLabel.frame = NSRect(x: 20, y: dialogHeight - 38, width: dialogWidth - 40, height: 20)
-        contentView.addSubview(infoLabel)
+        // Filename label (truncates with ellipsis if too long)
+        let nameLabel = NSTextField(labelWithString: filename)
+        nameLabel.font = NSFont.systemFont(ofSize: 12, weight: .medium)
+        nameLabel.lineBreakMode = .byTruncatingMiddle
+        nameLabel.frame = NSRect(x: 20, y: dialogHeight - 32, width: dialogWidth - 40, height: 18)
+        contentView.addSubview(nameLabel)
+
+        // Dimensions label
+        let dimLabel = NSTextField(labelWithString: "\(origWidth) × \(origHeight) px")
+        dimLabel.font = NSFont.systemFont(ofSize: 11)
+        dimLabel.textColor = .secondaryLabelColor
+        dimLabel.frame = NSRect(x: 20, y: dialogHeight - 50, width: dialogWidth - 40, height: 16)
+        contentView.addSubview(dimLabel)
 
         // Width row
         let wLabel = NSTextField(labelWithString: "Max Width:")
-        wLabel.frame = NSRect(x: 20, y: dialogHeight - 72, width: 80, height: 22)
+        wLabel.frame = NSRect(x: 20, y: dialogHeight - 84, width: 80, height: 22)
         contentView.addSubview(wLabel)
 
-        widthField = NSTextField(frame: NSRect(x: 105, y: dialogHeight - 72, width: 100, height: 22))
+        widthField = NSTextField(frame: NSRect(x: 105, y: dialogHeight - 84, width: 100, height: 22))
         widthField.placeholderString = "auto"
         contentView.addSubview(widthField)
 
         let wUnit = NSTextField(labelWithString: "px")
-        wUnit.frame = NSRect(x: 210, y: dialogHeight - 72, width: 30, height: 22)
+        wUnit.frame = NSRect(x: 210, y: dialogHeight - 84, width: 30, height: 22)
         contentView.addSubview(wUnit)
 
         // Height row
         let hLabel = NSTextField(labelWithString: "Max Height:")
-        hLabel.frame = NSRect(x: 20, y: dialogHeight - 102, width: 80, height: 22)
+        hLabel.frame = NSRect(x: 20, y: dialogHeight - 114, width: 80, height: 22)
         contentView.addSubview(hLabel)
 
-        heightField = NSTextField(frame: NSRect(x: 105, y: dialogHeight - 102, width: 100, height: 22))
+        heightField = NSTextField(frame: NSRect(x: 105, y: dialogHeight - 114, width: 100, height: 22))
         heightField.placeholderString = "auto"
         contentView.addSubview(heightField)
 
         let hUnit = NSTextField(labelWithString: "px")
-        hUnit.frame = NSRect(x: 210, y: dialogHeight - 102, width: 30, height: 22)
+        hUnit.frame = NSRect(x: 210, y: dialogHeight - 114, width: 30, height: 22)
         contentView.addSubview(hUnit)
 
         // Buttons
