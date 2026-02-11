@@ -2,6 +2,10 @@
 
 A macOS Quick Action that lets you resize images directly from Finder's right-click menu. The resized image is saved alongside the original with dimensions in the filename (e.g., `photo_500x333.jpg`).
 
+<p align="center">
+  <img src="resize-dialog.png" width="360" alt="Resize Image dialog">
+</p>
+
 ## Features
 
 - Right-click any image in Finder → Quick Actions → **Resize Image**
