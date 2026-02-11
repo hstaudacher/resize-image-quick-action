@@ -29,10 +29,13 @@ mkdir -p "$WORKFLOW_DIR/Contents/Scripts"
 cp "$SCRIPT_DIR/resize-image.sh" "$WORKFLOW_DIR/Contents/Scripts/resize-image.sh"
 chmod +x "$WORKFLOW_DIR/Contents/Scripts/resize-image.sh"
 
-# Compile and bundle the dialog helper
-echo "  Compiling dialog helper..."
+# Compile icon helper (used after Automator registration)
+echo "  Compiling helpers..."
 swiftc -O -o "$WORKFLOW_DIR/Contents/Scripts/resize-dialog" "$SCRIPT_DIR/resize-dialog.swift" -framework Cocoa
 chmod +x "$WORKFLOW_DIR/Contents/Scripts/resize-dialog"
+
+ICON_TOOL=$(mktemp /tmp/set-icon.XXXXXX)
+swiftc -O -o "$ICON_TOOL" "$SCRIPT_DIR/set-icon.swift" -framework Cocoa
 
 # Create Info.plist
 cat > "$WORKFLOW_DIR/Contents/Info.plist" <<'INFOPLIST'
@@ -246,7 +249,7 @@ exec "$SCRIPT_DIR/resize-image.sh" "$@"</string>
 		<key>serviceProcessesInput</key>
 		<integer>1</integer>
 		<key>systemImageName</key>
-		<string>NSActionTemplate</string>
+		<string>arrow.up.left.and.arrow.down.right</string>
 		<key>useAutomaticInputType</key>
 		<integer>0</integer>
 		<key>workflowTypeIdentifier</key>
@@ -269,6 +272,22 @@ tell application "Automator"
     quit
 end tell
 REGISTER
+
+# Fix metadata after Automator re-save (it resets some values)
+/usr/libexec/PlistBuddy \
+    -c "Set :workflowMetaData:processesInput true" \
+    -c "Set :workflowMetaData:serviceProcessesInput true" \
+    -c "Set :workflowMetaData:presentationMode 11" \
+    -c "Set :workflowMetaData:systemImageName arrow.up.left.and.arrow.down.right" \
+    "$WORKFLOW_DIR/Contents/document.wflow" 2>/dev/null
+
+# Set workflow icon (after Automator re-save so it's not overwritten)
+echo "  Setting workflow icon..."
+ICON_PNG=$(mktemp /tmp/workflow-icon.XXXXXX.png)
+"$ICON_TOOL" "$ICON_PNG" "arrow.up.left.and.arrow.down.right" "$WORKFLOW_DIR"
+mkdir -p "$WORKFLOW_DIR/Contents/QuickLook"
+cp "$ICON_PNG" "$WORKFLOW_DIR/Contents/QuickLook/Thumbnail.png"
+rm -f "$ICON_TOOL" "$ICON_PNG"
 
 echo "  Workflow installed to: $WORKFLOW_DIR"
 echo ""
