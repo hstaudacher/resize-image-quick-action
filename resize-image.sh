@@ -63,7 +63,14 @@ print(int(h*s))
     output="${dir}/${name}_${new_w}x${new_h}.${ext}"
 
     cp "$f" "$output"
-    if sips --resampleWidth "$new_w" --resampleHeight "$new_h" "$output" >/dev/null 2>&1; then
+    if [ -n "$max_w" ] && [ -n "$max_h" ]; then
+        sips -Z "$(python3 -c "print(max($new_w,$new_h))")" --resampleWidth "$new_w" --resampleHeight "$new_h" "$output" >/dev/null 2>&1
+    elif [ -n "$max_w" ]; then
+        sips --resampleWidth "$new_w" "$output" >/dev/null 2>&1
+    else
+        sips --resampleHeight "$new_h" "$output" >/dev/null 2>&1
+    fi
+    if [ $? -eq 0 ]; then
         osascript -e "display notification \"Saved: ${name}_${new_w}x${new_h}.${ext}\" with title \"Resize Image\""
     else
         osascript -e "display dialog \"Failed to resize image.\" buttons {\"OK\"} default button \"OK\" with icon stop with title \"Resize Image\""
