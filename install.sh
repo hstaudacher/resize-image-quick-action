@@ -232,9 +232,13 @@ exec "$SCRIPT_DIR/resize-image.sh" "$@"</string>
 		<key>outputTypeIdentifier</key>
 		<string>com.apple.Automator.nothing</string>
 		<key>presentationMode</key>
-		<integer>15</integer>
+		<integer>11</integer>
 		<key>processesInput</key>
 		<integer>1</integer>
+		<key>serviceApplicationBundleID</key>
+		<string>com.apple.finder</string>
+		<key>serviceApplicationPath</key>
+		<string>/System/Library/CoreServices/Finder.app</string>
 		<key>serviceInputTypeIdentifier</key>
 		<string>com.apple.Automator.fileSystemObject</string>
 		<key>serviceOutputTypeIdentifier</key>
@@ -252,6 +256,20 @@ exec "$SCRIPT_DIR/resize-image.sh" "$@"</string>
 </plist>
 WFLOW
 
+# Register the Quick Action by opening and saving it in Automator
+echo "  Registering Quick Action with macOS..."
+osascript <<'REGISTER' >/dev/null 2>&1
+tell application "Automator"
+    set wfPath to (POSIX file (do shell script "echo $HOME/Library/Services/Resize\\ Image.workflow")) as alias
+    open wfPath
+    delay 2
+    save front document
+    delay 1
+    close front document
+    quit
+end tell
+REGISTER
+
 echo "  Workflow installed to: $WORKFLOW_DIR"
 echo ""
 echo "Done! The 'Resize Image' Quick Action is now available."
@@ -261,8 +279,3 @@ echo "  1. Right-click any image file in Finder"
 echo "  2. Go to 'Quick Actions' > 'Resize Image'"
 echo "  3. Enter a max width and/or max height"
 echo "  4. The resized copy will be saved next to the original"
-echo ""
-echo "NOTE: If it doesn't appear immediately, you may need to:"
-echo "  - Log out and log back in, or"
-echo "  - Go to System Settings > Privacy & Security > Extensions > Finder"
-echo "    and enable 'Resize Image'"
