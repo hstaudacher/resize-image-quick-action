@@ -44,3 +44,7 @@ rm -rf ~/Library/Services/Resize\ Image.workflow
 2. A dialog shows the filename, original dimensions, and two fields for max width/height
 3. Enter one or both values — the other is calculated proportionally
 4. The resized copy is saved as `originalname_WxH.extension`
+
+## License
+
+[MIT](LICENSE)
